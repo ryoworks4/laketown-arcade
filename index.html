@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>LAKETOWN ARCADE — AIと つくった ゲームセンター</title>
+<meta name="robots" content="noindex">
+<style>
+  :root{
+    --bg:#0d1330; --bg2:#141b3f; --card:#1a2148; --line:#2c3670;
+    --cyan:#4DF3FF; --pink:#FF5CA8; --yellow:#FFD93D; --green:#6BF08C;
+    --ink:#EAF2FF; --muted:#8fa0d0;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{background:var(--bg);color:var(--ink);
+    font-family:-apple-system,"Hiragino Maru Gothic ProN","Hiragino Kaku Gothic ProN",sans-serif;}
+  body{line-height:1.6;overflow-x:hidden}
+
+  /* うっすら走査線（アーケード感） */
+  body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:5;opacity:.5;
+    background:repeating-linear-gradient(0deg,transparent 0 3px,rgba(0,0,0,.14) 3px 4px);}
+
+  .wrap{max-width:560px;margin:0 auto;padding:26px 16px 70px;position:relative;z-index:1}
+
+  /* ===== ヘッダー ===== */
+  header{text-align:center;padding:18px 0 8px}
+  .coin{font-size:12px;letter-spacing:.34em;color:var(--yellow);font-weight:800}
+  @media (prefers-reduced-motion: no-preference){
+    .coin{animation:blink 1.2s steps(2) infinite}
+    @keyframes blink{50%{opacity:.15}}
+  }
+  h1{
+    margin:10px 0 6px;font-size:34px;font-weight:900;letter-spacing:.06em;line-height:1.2;
+    color:#fff;
+    text-shadow:0 0 6px rgba(77,243,255,.9),0 0 22px rgba(77,243,255,.55),
+                3px 3px 0 #0a2a66;
+  }
+  h1 small{display:block;font-size:13px;font-weight:800;color:var(--cyan);
+    letter-spacing:.3em;margin-top:4px;text-shadow:0 0 8px rgba(77,243,255,.8)}
+  .lead{font-size:13px;color:var(--muted);margin-top:10px}
+  .lead b{color:var(--ink)}
+  .marquee{
+    margin:16px auto 0;border:2px solid var(--line);border-radius:999px;
+    padding:7px 14px;font-size:12.5px;font-weight:800;color:var(--yellow);
+    background:rgba(255,217,61,.06);display:inline-block;
+  }
+
+  /* ===== 日付セクション ===== */
+  section{margin-top:38px}
+  .day{
+    display:flex;align-items:center;gap:10px;margin-bottom:14px;
+  }
+  .day .dt{
+    font-size:15px;font-weight:900;letter-spacing:.14em;color:var(--pink);
+    text-shadow:0 0 10px rgba(255,92,168,.7);white-space:nowrap;
+  }
+  .day .new{
+    font-size:10.5px;font-weight:900;color:#0d1330;background:var(--green);
+    border-radius:6px;padding:1px 8px;letter-spacing:.1em;
+    box-shadow:0 0 10px rgba(107,240,140,.7);
+  }
+  .day::after{content:"";flex:1;height:2px;
+    background:repeating-linear-gradient(90deg,var(--line) 0 10px,transparent 10px 18px);}
+  .day-note{font-size:11.5px;color:var(--muted);margin:-8px 0 12px}
+
+  /* ===== 筐体カード ===== */
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .cab{
+    display:block;text-decoration:none;color:var(--ink);
+    background:linear-gradient(180deg,var(--bg2),var(--card));
+    border:2px solid var(--line);border-radius:14px;
+    padding:14px 10px 12px;text-align:center;position:relative;
+    transition:transform .08s;
+  }
+  .cab:active{transform:scale(.96)}
+  .cab .scr{
+    display:flex;align-items:center;justify-content:center;
+    height:64px;border-radius:9px;margin-bottom:9px;font-size:38px;
+    background:radial-gradient(circle at 50% 35%,#233066,#101636 75%);
+    border:2px solid #202a5c;
+    box-shadow:inset 0 0 14px rgba(0,0,0,.6);
+  }
+  .cab .nm{font-size:13px;font-weight:800;line-height:1.4;min-height:2.6em;
+    display:flex;align-items:center;justify-content:center}
+  .cab .tg{
+    display:inline-block;margin-top:6px;font-size:10px;font-weight:900;
+    letter-spacing:.08em;padding:1px 9px;border-radius:999px;
+    color:#0d1330;background:var(--tag,#4DF3FF);
+  }
+  .cab::before{ /* 上部ネオンライン */
+    content:"";position:absolute;left:14px;right:14px;top:0;height:3px;border-radius:3px;
+    background:var(--tag,#4DF3FF);box-shadow:0 0 10px var(--tag,#4DF3FF);opacity:.9;
+  }
+  .cab .play{
+    margin-top:7px;font-size:10.5px;font-weight:900;letter-spacing:.22em;color:var(--cyan);
+  }
+  @media (prefers-reduced-motion: no-preference){
+    .cab .play{animation:blink 1.6s steps(2) infinite}
+  }
+
+  /* ===== フッター ===== */
+  footer{
+    margin-top:52px;text-align:center;font-size:12px;color:var(--muted);
+    border-top:2px solid var(--line);padding-top:18px;
+  }
+  footer .big{font-size:13.5px;color:var(--ink);font-weight:800;line-height:1.8}
+  footer .big b{color:var(--yellow)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="coin">▶ INSERT COIN ◀</div>
+    <h1>LAKETOWN<br>ARCADE<small>AIと つくった ゲームセンター</small></h1>
+    <p class="lead">ここに ならんでいる ゲームは ぜんぶ、<br><b>子どもたちの「こんなの つくりたい！」</b>から うまれました。</p>
+    <div class="marquee">★ ぜんぶ むりょう ・ スマホで あそべるよ ★</div>
+  </header>
+
+  <div id="days"></div>
+
+  <footer>
+    <p class="big">プログラミングは 1ぎょうも かいていません。<br><b>AIに ことばで つたえて</b> つくりました。</p>
+    <p style="margin-top:10px">つぎの イベントで あたらしい ゲームが ふえるよ 🎮</p>
+  </footer>
+
+</div>
+
+<script>
+  // ====== 開催日ごとの棚（新しい日を配列の先頭に足していく） ======
+  // ゲーム追加の手順: natsu-game-land に push したら、ここに1行足すだけ
+  const BASE = 'https://ryoworks4.github.io/natsu-game-land/';
+  const DAYS = [
+    {
+      date: '2026.7 の さくひん', isNew: true,
+      note: 'イベントで「つくりたい！」が かたちになった 5ほん',
+      games: [
+        {f:'paw-patrol',         n:'レスキューわんこ隊',    i:'🐶', tag:'アクション', col:'#FF5CA8'},
+        {f:'burosuta',           n:'ブロ・アリーナ',        i:'⭐', tag:'バトル',     col:'#FFD93D'},
+        {f:'dino-battle',        n:'恐竜バトル',            i:'🦖', tag:'バトル',     col:'#FFD93D'},
+        {f:'minecraft-survival', n:'ブロック サバイバル',   i:'🧟', tag:'クラフト',   col:'#6BF08C'},
+        {f:'forever-blue',       n:'うみの だいたんけん',   i:'🌊', tag:'のんびり',   col:'#4DF3FF'},
+      ]
+    },
+    {
+      date: '2026.6 の さくひん',
+      note: 'なつやすみ ゲームランド うまれの 23ほん',
+      games: [
+        {f:'neko-jump',        n:'ねこジャンプ',            i:'🐱', tag:'アクション', col:'#FF5CA8'},
+        {f:'mario',            n:'ジャンプ大冒険',          i:'🍄', tag:'アクション', col:'#FF5CA8'},
+        {f:'mario2',           n:'ダッシュ冒険ランド',      i:'🏃', tag:'アクション', col:'#FF5CA8'},
+        {f:'kart',             n:'ぷにカート',              i:'🏎️', tag:'レース',     col:'#6BF08C'},
+        {f:'shooting',         n:'うちゅうシューティング',  i:'🚀', tag:'シューティング', col:'#4DF3FF'},
+        {f:'smash-battle',     n:'ぷにスマッシュ',          i:'💥', tag:'バトル',     col:'#FFD93D'},
+        {f:'taisen-battle',    n:'たいせんバトル',          i:'🥊', tag:'バトル',     col:'#FFD93D'},
+        {f:'nyanko-battle',    n:'にゃんこ城バトル',        i:'🏰', tag:'バトル',     col:'#FFD93D'},
+        {f:'nyanko-daisensou', n:'にゃんこ大さくせん',      i:'⚔️', tag:'バトル',     col:'#FFD93D'},
+        {f:'nyanko-wars',      n:'にゃんこウォーズ',        i:'😺', tag:'バトル',     col:'#FFD93D'},
+        {f:'minecraft',        n:'立体ブロックビルダー',    i:'🧱', tag:'クラフト',   col:'#6BF08C'},
+        {f:'minecraft-3d',     n:'一人称3D ぼうけん',       i:'⛏️', tag:'クラフト',   col:'#6BF08C'},
+        {f:'minecraft2',       n:'2D ほって つくろう',      i:'⬛', tag:'クラフト',   col:'#6BF08C'},
+        {f:'doubutsu-mori',    n:'なかよし どうぶつ村',     i:'🌳', tag:'のんびり',   col:'#4DF3FF'},
+        {f:'party',            n:'パーティすごろく',        i:'🎲', tag:'パーティ',   col:'#FF5CA8'},
+        {f:'suika',            n:'おとして フルーツパズル', i:'🍉', tag:'パズル',     col:'#4DF3FF'},
+        {f:'puzzle-tsunage',   n:'つなげけしパズル',        i:'🧩', tag:'パズル',     col:'#4DF3FF'},
+        {f:'dasshutsu',        n:'へやから だっしゅつ！',   i:'🚪', tag:'なぞとき',   col:'#4DF3FF'},
+        {f:'catch-zukan',      n:'キャッチずかん',          i:'🐛', tag:'あつめる',   col:'#6BF08C'},
+        {f:'nuri-time',        n:'ぬりぬりタイム',          i:'🎨', tag:'おえかき',   col:'#FF5CA8'},
+        {f:'robot-program',    n:'ロボットプログラミング',  i:'🤖', tag:'まなび',     col:'#4DF3FF'},
+        {f:'jiyukenkyu-gacha', n:'自由研究テーマ・ガチャ',  i:'🎰', tag:'まなび',     col:'#4DF3FF'},
+        {f:'mirai-card',       n:'未来のぼく・わたしカード',i:'🔮', tag:'うらない',   col:'#FF5CA8'},
+      ]
+    },
+  ];
+
+  const root = document.getElementById('days');
+  DAYS.forEach(day=>{
+    const sec = document.createElement('section');
+    const head = document.createElement('div'); head.className='day';
+    head.innerHTML = '<span class="dt">▶ '+day.date+'</span>' + (day.isNew?'<span class="new">NEW</span>':'');
+    sec.appendChild(head);
+    if(day.note){ const n=document.createElement('p'); n.className='day-note'; n.textContent=day.note; sec.appendChild(n); }
+    const grid = document.createElement('div'); grid.className='grid';
+    day.games.forEach(g=>{
+      const a=document.createElement('a'); a.className='cab';
+      a.href=BASE+g.f+'/index.html'; a.style.setProperty('--tag',g.col);
+      a.innerHTML='<span class="scr">'+g.i+'</span>'
+        +'<span class="nm">'+g.n+'</span><br>'
+        +'<span class="tg">'+g.tag+'</span>'
+        +'<div class="play">TAP TO PLAY</div>';
+      grid.appendChild(a);
+    });
+    sec.appendChild(grid);
+    root.appendChild(sec);
+  });
+</script>
+</body>
+</html>
