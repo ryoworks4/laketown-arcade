@@ -1,6 +1,7 @@
 # LAKETOWN ARCADE
 
-イベント会場デモ集の公開ページ（ https://laketown-arcade.vercel.app/ ）。
+イベント会場デモ集の公開ページ（ https://laketown-game.vercel.app/ ）。
+※ 旧 laketown-arcade.vercel.app は別アカウントの旧スタブが占有しているため laketown-game に改名（2026-07-23）。Vercelプロジェクト名は laketown-arcade のまま。
 開催日ごとの棚に、AIと作ったゲームを並べる。ゲーム本体は
 [natsu-game-land](https://github.com/ryoworks4/natsu-game-land)（GitHub Pages）でホストし、ここからは直リンクする。
 
